@@ -22,16 +22,24 @@ def send_welcome(message):
     portfolio_btn = types.KeyboardButton('🌐 Portfolio Website')
     about_btn = types.KeyboardButton('ℹ️ About Me')
     
-    markup.add( portfolio_btn)
+    markup.add(portfolio_btn)
     markup.add(contact_btn, about_btn)
     
-    welcome_text = f"Hello {user.first_name}! 👋\n\n" \
-                   "Welcome to my portfolio bot. Here you can:\n" \
-                   "• Leave me a message\n" \
-                   "• Visit my portfolio website\n" \
-                   "• Learn more about me and my work"
+    welcome_text = f"""
+⭐ *Welcome to My Portfolio Bot* ⭐
+
+Hello [*{user.first_name}*](tg://user?id={user.id}) 👋
+
+I'm glad to see you here\. You can:
+
+📌 Visit my portfolio website
+📝 Send me a message
+ℹ️ Learn more about my work
+
+Choose an option below 👇
+"""
     
-    bot.reply_to(message, welcome_text, reply_markup=markup)
+    bot.send_message(message.chat.id, welcome_text, parse_mode='MarkdownV2', reply_markup=markup)
 
 # Portfolio website havolasi
 @bot.message_handler(func=lambda message: message.text == '🌐 Portfolio Website')
@@ -48,24 +56,38 @@ def portfolio_link(message):
 @bot.message_handler(func=lambda message: message.text == 'ℹ️ About Me')
 def about_me(message):
     about_text = """
-🎯 Front-end Developer
+🎯 <b>Front-end Developer</b>
+<pre title="Technical Skills">
+<b>Technical Skills:</b>
 
-Skills:
-• HTML5, CSS3, JavaScript
-• React, Next.js
-• Responsive Design
-• UI/UX Development
-• Interactive Animations
-• Clean Code
+└─ 💻 Core:
+|    ├─ HTML5
+|    ├─ CSS3
+|    └─ JavaScript
+|
+└─ 🛠 Frameworks:
+|    ├─ React.js (soon)
+|    └─ Next.js (soon)
+|
+└─ 📱 Expertise:
+|    ├─ Responsive Design
+|    ├─ UI/UX Development
+|    ├─ Interactive Animations
+|    └─ Clean Code
+</pre>
 
-Let's create something amazing together! 
-    """
-    bot.reply_to(message, about_text)
+<b>Let's create something amazing together!</b> ✨
+"""
+    bot.reply_to(message, about_text, parse_mode='HTML')
 
 # Xabar qoldirish
 @bot.message_handler(func=lambda message: message.text == '📝 Leave Message')
 def ask_message(message):
-    msg = bot.reply_to(message, "Please write your message:")
+    msg = bot.reply_to(message, """
+✍️ *Please write your message:*
+
+I'll receive your message directly and respond as soon as possible.
+    """, parse_mode='Markdown')
     bot.register_next_step_handler(msg, process_message)
 
 def process_message(message):
@@ -73,14 +95,20 @@ def process_message(message):
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     
     # Admin uchun xabar formati
-    admin_message = f"New message!\n\n" \
-                    f"From: {user.first_name} ({user.id})\n" \
-                    f"Username: @{user.username}\n" \
-                    f"Time: {timestamp}\n\n" \
-                    f"Message: {message.text}"
+    admin_message = f"""
+📨 <b>New Message Received!</b>
+
+👤 From: <a href="tg://user?id={user.id}">{user.first_name}</a>
+💠 ID: <code>{user.id}</code>
+🔗 Username: @{user.username}
+🕒 Time: <code>{timestamp}</code>
+
+💬 <b>Message:</b>
+<pre>{message.text}</pre>
+"""
     
     # Adminga xabarni yuborish
-    bot.send_message(ADMIN_ID, admin_message)
+    bot.send_message(ADMIN_ID, admin_message, parse_mode='HTML')
     
     # Foydalanuvchiga tasdiqlash xabari
     thank_you = "Thank you! Your message has been sent. I'll get back to you soon! 🙂"
